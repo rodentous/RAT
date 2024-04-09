@@ -1,10 +1,12 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <map>
 #include <vector>
 #include <string>
+#include <map>
 #include <cstdint>
+#include <cctype>
+#include <cstring>
 
 struct Token
 {
@@ -27,6 +29,12 @@ struct Token
     Token() : type(CONSTANT), value(""), line(0), column(0) {} // Default constructor
 };
 
+struct AST
+{
+    Token* value;
+    AST* left;
+    AST* right;
+};
 
 struct Variable
 {
@@ -47,21 +55,21 @@ struct Variable
 
     // Function to set the value of the variable
     template <typename T>
-    void setValue(const T& value);
+    void set_value(const T& value);
 
     // Function to get the value of the variable
     template <typename T>
-    T getValue() const;
+    T get_value() const;
 };
 
-class SymbolTable
+class Symbol_table
 {
 private:
     std::map<std::string, Variable> variables;
 
 public:
-    void addVariable(const std::string& name, const Variable& var);
-    Variable getVariable(const std::string& name) const;
+    void add_variable(const std::string& name, const Variable& var);
+    Variable get_variable(const std::string& name) const;
     bool contains(const std::string& name) const;
 };
 

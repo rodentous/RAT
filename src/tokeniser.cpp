@@ -1,8 +1,6 @@
 #include "tokeniser.h"
 
 #include "types.h"
-#include <vector>
-#include <string>
 
 Token add_token(std::string text)
 {
@@ -17,26 +15,16 @@ Token add_token(std::string text)
     return token;
 }
 
-std::vector<std::vector<Token>> get_tokens(std::string text)
+std::vector<Token> get_tokens(std::string text)
 {
-    std::vector<std::vector<Token>> lines;
     std::vector<Token> tokens;
     std::string buffer;
 
     for (char character : text)
     {
-        if (character == ';' || character == '\n')
+        if (buffer.empty())
         {
-            if (!buffer.empty())
-                tokens.push_back(add_token(buffer));
-            buffer.clear();
-            lines.push_back(tokens);
-            tokens.clear();
-        }
-        
-        else if (buffer.empty())
-        {
-            if (!isspace(character))
+            if (!std::isspace(character))
                 buffer.push_back(character);
         }
         else if (std::isalpha(buffer.at(0)) && std::isalnum(character))
@@ -57,7 +45,5 @@ std::vector<std::vector<Token>> get_tokens(std::string text)
     if (!buffer.empty())
         tokens.push_back(add_token(buffer));
 
-    if (!tokens.empty())
-        lines.push_back(tokens);
-    return lines;
+    return tokens;
 }

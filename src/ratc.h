@@ -1,10 +1,10 @@
-#ifndef RATC_H
-#define RATC_H
+#ifndef RATC
+#define RATC
 
 #include <string>
 
-std::string compile(std::string source);
+void compile(std::string source);
 
-int main();
+int main(int argc, char* argv[]);
 
 #endif
