@@ -1,5 +1,5 @@
-/bin
-/.vscode
+bin/
+.vscode/
 
 # Prerequisites
 *.d
