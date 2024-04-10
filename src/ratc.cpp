@@ -4,6 +4,7 @@
 #include "types.h"
 #include "tokeniser.h"
 #include "parser.h"
+#include "converter.h"
 #include <iostream>
 #include <sstream>
 
@@ -12,7 +13,7 @@ void print_tree(AST root, int depth)
     for (int i = 0; i < depth; i++)
         std::cout << "\t";
     
-    std::cout << "<" << root.value->value << ">" << std::endl;
+    std::cout << "<" << root.value.value << ">" << std::endl;
     if (root.left != nullptr)
         print_tree(*root.left, depth + 1);
     if (root.right != nullptr)
@@ -75,7 +76,8 @@ void compile(std::string text)
     std::cout << std::endl << "CONVERTING:" << std::endl;
     for (AST tree : trees)
     {
-        // convert(tree);
+        convert(tree);
+        std::cout << "data_segment:\n" << CONVERTER_H::data_segment << "\n\ntext_segment:\n" << CONVERTER_H::text_segment << std::endl;
     }
 }
 

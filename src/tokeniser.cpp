@@ -1,13 +1,23 @@
 #include "tokeniser.h"
 
 #include "types.h"
+#include <algorithm>
+
+std::vector<std::string> keywords = {
+    "keyword",
+};
 
 Token add_token(std::string text)
 {
     Token token;
     token.value = text;
     if (isalpha(text.at(0)))
-        token.type = Token::VARIABLE;
+    {
+        if (std::find(keywords.begin(), keywords.end(), token.value) != keywords.end())
+            token.type = Token::KEYWORD;
+        else
+            token.type = Token::VARIABLE;
+    }
     else if (std::isdigit(text.at(0)))
         token.type = Token::CONSTANT;
     else if (std::ispunct(text.at(0)))
