@@ -12,9 +12,10 @@ struct Token
 {
     enum Type
     {
-        VARIABLE,
         CONSTANT,
+        VARIABLE,
         OPERATOR,
+        KEYWORD,
         // ...
     };
     Type type;
@@ -31,7 +32,7 @@ struct Token
 
 struct AST
 {
-    Token* value;
+    Token value;
     AST* left;
     AST* right;
 };
@@ -43,7 +44,7 @@ struct Variable
     	NONE,
         INTEGER,
         FLOAT,
-        // Add more types as needed
+        // ...
     } type;
     
     std::vector<uint8_t> data; // Raw bytes of variable value
