@@ -1,31 +1,36 @@
 #include "converter.h"
 #include <stdexcept>
 
-std::string data_segment;
-std::string text_segment;
+std::string code;
+int highest = 0;
+
+std::string get_var(int num)
+{
+    return "r" + std::to_string(num);
+}
 
 void convert(AST tree)
 {
     switch (tree.value.type)
     {
-        case Token::CONSTANT:
-            text_segment += "take " + tree.value.value + "\n";
-            break;
-        case Token::OPERATOR:
-            convert(*tree.left);
-            convert(*tree.right);
-            text_segment += "take result of " + tree.value.value + "\n";
-            break;
-        case Token::KEYWORD:
-            if (tree.value.value == "var")
-                data_segment += "reserve 4 bites for " + tree.value.value + "\n";
-            else if (tree.value.value == "write")
-                text_segment += "write\n";
-            break;
-        case Token::VARIABLE:
-            text_segment += "take " + tree.value.value + "\n";
-            break;
-        default:
-            throw std::runtime_error("Unexpected token: " + tree.value.value);
+	    case Token::CONSTANT:
+	        code += get_var(++highest) + " = " + tree.value.value + "\n";
+	        break;
+	    case Token::OPERATOR:
+	        convert(*tree.left);
+	        convert(*tree.right);
+	        code += get_var(highest - 1) + " = " + get_var(highest - 1) + " " + tree.value.value + " " + get_var(highest) +
+	                "\n";
+	        highest--;
+	        break;
+	    case Token::KEYWORD:
+	        if (tree.value.value == "write")
+	        {
+	            convert(*tree.right);
+	            code += "write " + get_var(highest) + "\n";
+	        }
+	        break;
+	    default:
+	        throw std::runtime_error("Unexpected token: " + tree.value.value);
     }
 }

@@ -4,8 +4,17 @@
 #include <algorithm>
 
 std::vector<std::string> keywords = {
-    "keyword",
+    "write",
 };
+
+int get_priority(std::string text)
+{
+	if (text == "+" || text == "-")
+		return 2;
+	if (text == "*" || text == "/")
+		return 1;
+	return 0;
+}
 
 Token add_token(std::string text)
 {
@@ -14,14 +23,26 @@ Token add_token(std::string text)
     if (isalpha(text.at(0)))
     {
         if (std::find(keywords.begin(), keywords.end(), token.value) != keywords.end())
+       	{
             token.type = Token::KEYWORD;
+	        token.priority = 3;
+        }
         else
+        {
             token.type = Token::VARIABLE;
+	        token.priority = 0;
+		}
     }
     else if (std::isdigit(text.at(0)))
+    {
         token.type = Token::CONSTANT;
+        token.priority = 0;
+    }
     else if (std::ispunct(text.at(0)))
-        token.type = Token::OPERATOR;
+	{
+		token.type = Token::OPERATOR;
+		token.priority = get_priority(text);
+	}
     return token;
 }
 

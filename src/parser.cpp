@@ -8,9 +8,9 @@ AST* parse(std::vector<Token> tokens)
 
     Token highest = tokens.at(0);
     size_t index = 0;
-    for (int i = 0; i < tokens.size(); i++)
+    for (size_t i = 0; i < tokens.size(); i++)
     {
-        if (tokens.at(i).type > highest.type)
+        if (tokens.at(i).priority > highest.priority)
         {
             highest = tokens.at(i);
             index = i;

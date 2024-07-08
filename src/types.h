@@ -20,6 +20,7 @@ struct Token
     };
     Type type;
     std::string value;
+    int priority = 0;
 
     int line; // Line number where the token appears
     int column; // Column number where the token appears

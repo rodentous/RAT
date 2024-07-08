@@ -3,9 +3,10 @@
 
 #include "types.h"
 
-extern std::string data_segment;
-extern std::string text_segment;
+extern std::string code;
+extern int highest;
 
+std::string get_var(int num);
 void convert(AST trees);
 
 #endif

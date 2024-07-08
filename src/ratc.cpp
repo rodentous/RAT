@@ -5,6 +5,7 @@
 #include "tokeniser.h"
 #include "parser.h"
 #include "converter.h"
+#include "code_generator.h"
 #include <iostream>
 #include <sstream>
 
@@ -33,7 +34,7 @@ void compile(std::string text)
 
     // DEBUG
     std::cout << text << std::endl;
-    // END DEBUG
+    //
     
     std::stringstream source(text);
     std::string line;
@@ -50,9 +51,9 @@ void compile(std::string text)
 
         // DEBUG
         for (Token token : tokens)
-            std::cout << "<" << token.value << ">";
+            std::cout << "<" << token.type << ", " << token.value << ">";
         std::cout << std::endl;
-        // END DEBUG
+        //
     }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +68,7 @@ void compile(std::string text)
 
         // DEBUG
         print_tree(tree, 0);
-        // END DEBUG
+        //
     }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -77,11 +78,20 @@ void compile(std::string text)
     for (AST tree : trees)
     {
         convert(tree);
-        std::cout << "data_segment:\n" << CONVERTER_H::data_segment << "\n\ntext_segment:\n" << CONVERTER_H::text_segment << std::endl;
+
+		// DEBUG
+		std::cout << CONVERTER_H::code << std::endl;
+		//
     }
+
+//////////////////////////////////////////////////////////////////////////////////////
+// CODE GENERATION
+//////////////////////////////////////////////////////////////////////////////////////
+    std::cout << std::endl << "CONVERTING:" << std::endl;
+    
 }
 
-std::string usage = R"(
+std::string usage = R"(rat compiler
 Usage:
     ratc [-o] <output> <input>
     ratc [options] <arguments>
@@ -93,24 +103,29 @@ Options:
 
 int main(int argc, char* argv[])
 {
-    if (argv[1] == nullptr)
-    {
-        std::cout << usage << std::endl;
-        return 0;
-    }
-    else if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help")
-    {
-        std::cout << usage << std::endl;
-        return 0;
-    }
-    else if (std::string(argv[1]) == "-r" || std::string(argv[1]) == "--run")
-    {
-        compile(argv[2]);
-        return 0;
-    }
-    else
-    {
-        std::cout << "Unknown option: " << argv[1] << usage << std::endl;
-        return 1;
-    }
+	for (int i = 1; i < argc; i++)
+	{
+	    if (argv[i] == nullptr)
+	    {
+	        std::cout << usage << std::endl;
+	        return 0;
+	    }
+	    else if (std::string(argv[i]) == "-h" || std::string(argv[i]) == "--help")
+	    {
+	        std::cout << usage << std::endl;
+	        return 0;
+	    }
+	    else if (std::string(argv[i]) == "-r" || std::string(argv[i]) == "--run")
+	    {
+	    	if (!argv[i + 1])
+	    		return 1;
+	        compile(argv[i + 1]);
+	        return 0;
+	    }
+	    else
+	    {
+	        std::cout << "Unknown option: " << argv[i] << usage << std::endl;
+	        return 1;
+	    }		
+	}
 }
