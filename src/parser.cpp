@@ -1,31 +1,32 @@
 #include "parser.h"
 
-AST* parse(std::vector<Token> tokens)
+AST *parse(std::vector<Token> tokens)
 {
-    if (tokens.empty()) return nullptr;
+	if (tokens.empty())
+		return nullptr;
 
-    AST* ast = new AST;
+	AST *ast = new AST;
 
-    Token highest = tokens.at(0);
-    size_t index = 0;
-    for (size_t i = 0; i < tokens.size(); i++)
-    {
-        if (tokens.at(i).priority > highest.priority)
-        {
-            highest = tokens.at(i);
-            index = i;
-        }
-    }
+	Token highest = tokens.at(0);
+	size_t index = 0;
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		if (tokens.at(i).priority > highest.priority)
+		{
+			highest = tokens.at(i);
+			index = i;
+		}
+	}
 
-    ast->value = Token(highest);
+	ast->value = Token(highest);
 
-    std::vector<Token> slice;
+	std::vector<Token> slice;
 
-    slice = std::vector<Token>(tokens.begin(), tokens.begin() + index);
-    ast->left = parse(slice);
-    
-    slice = std::vector<Token>(tokens.begin() + index + 1, tokens.end());
-    ast->right = parse(slice);
-    
-    return ast;
+	slice = std::vector<Token>(tokens.begin(), tokens.begin() + index);
+	ast->left = parse(slice);
+
+	slice = std::vector<Token>(tokens.begin() + index + 1, tokens.end());
+	ast->right = parse(slice);
+
+	return ast;
 }

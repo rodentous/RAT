@@ -5,6 +5,6 @@
 
 void compile(std::string source);
 
-int main(int argc, char* argv[]);
+int main(int argc, char *argv[]);
 
 #endif

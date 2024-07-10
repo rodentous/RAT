@@ -3,6 +3,6 @@
 
 #include <string>
 
-void preprocess(std::string* input);
+void preprocess(std::string *input);
 
 #endif

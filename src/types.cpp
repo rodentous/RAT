@@ -1,16 +1,16 @@
 #include "types.h"
 
-void Symbol_table::add_variable(const std::string& name, const Variable& var)
+void Symbol_table::add_variable(const std::string &name, const Variable &var)
 {
-    variables[name] = var;
+	variables[name] = var;
 }
 
-Variable Symbol_table::get_variable(const std::string& name) const
+Variable Symbol_table::get_variable(const std::string &name) const
 {
-    return variables.at(name);
+	return variables.at(name);
 }
 
-bool Symbol_table::contains(const std::string& name) const
+bool Symbol_table::contains(const std::string &name) const
 {
-    return variables.find(name) != variables.end();
+	return variables.find(name) != variables.end();
 }
