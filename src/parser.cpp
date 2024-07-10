@@ -18,6 +18,7 @@ AST* parse(std::vector<Token> tokens)
     }
 
     ast->value = Token(highest);
+
     std::vector<Token> slice;
 
     slice = std::vector<Token>(tokens.begin(), tokens.begin() + index);

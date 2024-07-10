@@ -4,11 +4,14 @@
 #include <algorithm>
 
 std::vector<std::string> keywords = {
+	"quit",
     "write",
 };
 
 int get_priority(std::string text)
 {
+	if (text == "=")
+		return 4;
 	if (text == "+" || text == "-")
 		return 2;
 	if (text == "*" || text == "/")

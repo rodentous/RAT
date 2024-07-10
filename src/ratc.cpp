@@ -29,7 +29,7 @@ void compile(std::string text)
 //////////////////////////////////////////////////////////////////////////////////////
 /// PREPROCESSING
 //////////////////////////////////////////////////////////////////////////////////////
-    std::cout << std::endl << "PREPROCESSING:" << std::endl;
+    std::cout << "\nPREPROCESSING:" << std::endl;
     preprocess(&text);
 
     // DEBUG
@@ -42,7 +42,7 @@ void compile(std::string text)
 //////////////////////////////////////////////////////////////////////////////////////
 // TOKENISING
 //////////////////////////////////////////////////////////////////////////////////////
-    std::cout << std::endl << "TOKENISING:" << std::endl;
+    std::cout << "\nTOKENISING:" << std::endl;
     std::vector<std::vector<Token>> lines;
     while (std::getline(source, line))
     {
@@ -59,7 +59,7 @@ void compile(std::string text)
 //////////////////////////////////////////////////////////////////////////////////////
 // PARSING
 //////////////////////////////////////////////////////////////////////////////////////
-    std::cout << std::endl << "PARSING:" << std::endl;
+    std::cout << "\nPARSING:" << std::endl;
     std::vector<AST> trees;
     for (std::vector<Token> tokens : lines)
     {
@@ -74,31 +74,31 @@ void compile(std::string text)
 //////////////////////////////////////////////////////////////////////////////////////
 // CONVERTING
 //////////////////////////////////////////////////////////////////////////////////////
-    std::cout << std::endl << "CONVERTING:" << std::endl;
+    std::cout << "\nCONVERTING:" << std::endl;
     for (AST tree : trees)
     {
-        convert(tree);
+        std::string code = convert(tree);
 
 		// DEBUG
-		std::cout << CONVERTER_H::code << std::endl;
+		std::cout << code;
 		//
     }
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CODE GENERATION
 //////////////////////////////////////////////////////////////////////////////////////
-    std::cout << std::endl << "CONVERTING:" << std::endl;
+    std::cout << "\nGENERATING:" << std::endl;
     
 }
 
 std::string usage = R"(rat compiler
 Usage:
-    ratc [-o] <output> <input>
+    ratc <input> [-o] <output>
     ratc [options] <arguments>
 Options:
     -h | --help     print this message
     -o <output>     compiled binary file
-    -r || --run     run line of code
+    -r |  --run     run code
 )";
 
 int main(int argc, char* argv[])

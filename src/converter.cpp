@@ -9,7 +9,7 @@ std::string get_var(int num)
     return "r" + std::to_string(num);
 }
 
-void convert(AST tree)
+std::string convert(AST tree)
 {
     switch (tree.value.type)
     {
@@ -29,8 +29,14 @@ void convert(AST tree)
 	            convert(*tree.right);
 	            code += "write " + get_var(highest) + "\n";
 	        }
+	        else if (tree.value.value == "quit")
+   	        {
+   	            convert(*tree.right);
+   	            code += "quit " + get_var(highest) + "\n";
+   	        }
 	        break;
 	    default:
 	        throw std::runtime_error("Unexpected token: " + tree.value.value);
     }
+    return code;
 }

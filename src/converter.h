@@ -3,10 +3,7 @@
 
 #include "types.h"
 
-extern std::string code;
-extern int highest;
-
 std::string get_var(int num);
-void convert(AST trees);
+std::string convert(AST trees);
 
 #endif
