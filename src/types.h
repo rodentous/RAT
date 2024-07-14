@@ -24,12 +24,6 @@ struct Token
 
 	int line; // Line number where the token appears
 	int column; // Column number where the token appears
-
-	// // Constructor
-	// Token(Type t, const std::string& v, int l, int c) : type(t), value(v), line(l), column(c)
-	// {
-	//
-	// }
 };
 
 struct AST
