@@ -3,6 +3,7 @@
 
 #include "types.h"
 
-AST *parse(std::vector<Token> tokens);
+Statement parse_statement(std::vector<Token> tokens);
+AST *parse_expression(std::vector<Token> tokens);
 
 #endif

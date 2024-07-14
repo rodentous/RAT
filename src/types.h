@@ -3,10 +3,10 @@
 
 #include <cctype>
 #include <cstdint>
-#include <cstring>
 #include <map>
 #include <string>
 #include <vector>
+#include <variant>
 
 struct Token
 {
@@ -16,7 +16,7 @@ struct Token
 		VARIABLE,
 		OPERATOR,
 		KEYWORD,
-		// ...
+ // ...
 	};
 	Type type;
 	std::string value;
@@ -33,6 +33,11 @@ struct AST
 	AST *right;
 };
 
+struct Statement
+{
+	std::vector<std::variant<AST, Statement>> lines;
+};
+
 struct Variable
 {
 	enum Type
@@ -40,7 +45,7 @@ struct Variable
 		NONE,
 		INTEGER,
 		FLOAT,
-		// ...
+ // ...
 	} type;
 
 	std::vector<uint8_t> data; // Raw bytes of data
@@ -54,7 +59,7 @@ class Symbol_table
   public:
 	void add_variable(std::string &name, Variable &var);
 	Variable get_variable(std::string &name);
-	bool contains(std::string &name) ;
+	bool contains(std::string &name);
 };
 
 #endif

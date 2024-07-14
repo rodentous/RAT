@@ -1,6 +1,29 @@
 #include "parser.h"
 
-AST *parse(std::vector<Token> tokens)
+Statement parse_statement(std::vector<Token> tokens)
+{
+	Statement statement;
+	std::vector<Token> buffer;
+
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		if (tokens.at(i).value == ";")
+		{
+		    statement.lines.push_back(*parse_expression(buffer));
+			buffer.clear();
+		}
+		else
+		{
+			buffer.push_back(tokens.at(i));
+		}
+	}
+	if (!buffer.empty())
+		statement.lines.push_back(*parse_expression(buffer));
+	
+	return statement;
+}
+
+AST *parse_expression(std::vector<Token> tokens)
 {
 	if (tokens.empty())
 		return nullptr;
@@ -20,13 +43,11 @@ AST *parse(std::vector<Token> tokens)
 
 	ast->value = Token(highest);
 
-	std::vector<Token> slice;
+	std::vector<Token> left_slice = std::vector<Token>(tokens.begin(), tokens.begin() + index);
+	ast->left = parse_expression(left_slice);
 
-	slice = std::vector<Token>(tokens.begin(), tokens.begin() + index);
-	ast->left = parse(slice);
-
-	slice = std::vector<Token>(tokens.begin() + index + 1, tokens.end());
-	ast->right = parse(slice);
+	std::vector<Token> right_slice = std::vector<Token>(tokens.begin() + index + 1, tokens.end());
+	ast->right = parse_expression(right_slice);
 
 	return ast;
 }

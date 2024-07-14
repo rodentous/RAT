@@ -1,13 +1,11 @@
 #include "ratc.h"
 
-#include "code_generator.h"
 #include "converter.h"
 #include "parser.h"
 #include "preprocessor.h"
 #include "tokeniser.h"
 #include "types.h"
 #include <iostream>
-#include <sstream>
 
 void print_tree(AST root, int depth)
 {
@@ -21,73 +19,56 @@ void print_tree(AST root, int depth)
 		print_tree(*root.right, depth + 1);
 }
 
-void compile(std::string text)
+void compile(std::string source)
 {
-	std::cout << text << std::endl;
+	std::cout << source << std::endl;
 	Symbol_table symbol_table;
 
 //////////////////////////////////////////////////////////////////////////////////////
 /// PREPROCESSING
 //////////////////////////////////////////////////////////////////////////////////////
 	std::cout << "\nPREPROCESSING:" << std::endl;
-	preprocess(&text);
+	preprocess(&source);
 
 	// DEBUG
-	std::cout << text << std::endl;
+	std::cout << source << std::endl;
 	//
-
-	std::stringstream source(text);
-	std::string line;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // TOKENISING
 //////////////////////////////////////////////////////////////////////////////////////
 	std::cout << "\nTOKENISING:" << std::endl;
-	std::vector<std::vector<Token>> lines;
-	while (std::getline(source, line))
-	{
-		std::vector<Token> tokens = get_tokens(line);
-		lines.push_back(tokens);
 
-		// DEBUG
-		for (Token token : tokens)
-			std::cout << "<" << token.type << ", " << token.value << ">";
-		std::cout << std::endl;
-		//
-	}
+	std::vector<Token> tokens = get_tokens(source);
+	// DEBUG
+	for (Token token : tokens)
+		std::cout << "<" << token.type << ", " << token.value << ">";
+	std::cout << std::endl;
+	//
 
 //////////////////////////////////////////////////////////////////////////////////////
 // PARSING
 //////////////////////////////////////////////////////////////////////////////////////
 	std::cout << "\nPARSING:" << std::endl;
-	std::vector<AST> trees;
-	for (std::vector<Token> tokens : lines)
-	{
-		AST tree = *parse(tokens);
-		trees.push_back(tree);
+	Statement statement = parse_statement(tokens);
 
-		// DEBUG
-		print_tree(tree, 0);
-		//
-	}
+	// DEBUG
+	for (std::variant<AST, Statement> stmt : statement.lines)
+		print_tree(std::get<AST>(stmt), 0);
+	//
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CONVERTING
 //////////////////////////////////////////////////////////////////////////////////////
 	std::cout << "\nCONVERTING:" << std::endl;
-	for (AST tree : trees)
+	for (std::variant<AST, Statement> tree : statement.lines)
 	{
-		std::string code = convert(tree);
+		std::string code = convert(std::get<AST>(tree));
 
-	// DEBUG
+		// DEBUG
 		std::cout << code;
-	//
+		//
 	}
-
-//////////////////////////////////////////////////////////////////////////////////////
-// CODE GENERATION
-//////////////////////////////////////////////////////////////////////////////////////
-	std::cout << "\nGENERATING:" << std::endl;
 }
 
 std::string usage = R"(rat compiler
