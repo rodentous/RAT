@@ -2,25 +2,49 @@
 
 Statement parse_statement(std::vector<Token> tokens)
 {
-	Statement statement;
-	std::vector<Token> buffer;
+    Statement statement;
+    std::vector<Token> buffer;
 
-	for (size_t i = 0; i < tokens.size(); i++)
-	{
-		if (tokens.at(i).value == ";")
-		{
-		    statement.lines.push_back(*parse_expression(buffer));
-			buffer.clear();
-		}
-		else
-		{
-			buffer.push_back(tokens.at(i));
-		}
-	}
-	if (!buffer.empty())
-		statement.lines.push_back(*parse_expression(buffer));
-	
-	return statement;
+    for (size_t i = 0; i < tokens.size(); i++)
+    {
+        if (tokens.at(i).value == ";")
+        {
+            if (!buffer.empty())
+			{
+                statement.lines.push_back(*parse_expression(buffer));
+                buffer.clear();
+            }
+        }
+        else if (tokens.at(i).value == "{")
+        {
+			if (!buffer.empty())
+			{
+                statement.lines.push_back(*parse_expression(buffer));
+                buffer.clear();
+            }
+            size_t brace_count = 1;
+            size_t j = i + 1;
+            while (j < tokens.size() && brace_count > 0)
+			{
+                if (tokens.at(j).value == "{")
+                    brace_count++;
+                else if (tokens.at(j).value == "}")
+                    brace_count--;
+                j++;
+            }
+            if (j < tokens.size())
+			{
+                statement.lines.push_back(parse_statement(std::vector<Token>(tokens.begin() + i + 1, tokens.begin() + j - 1)));
+                i = j - 1;
+            }
+        }
+        else
+            buffer.push_back(tokens.at(i));
+    }
+    if (!buffer.empty())
+        statement.lines.push_back(*parse_expression(buffer));
+
+    return statement;
 }
 
 AST *parse_expression(std::vector<Token> tokens)

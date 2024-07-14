@@ -7,16 +7,33 @@
 #include "types.h"
 #include <iostream>
 
-void print_tree(AST root, int depth)
+void print_tree(AST root, int depth = 0)
 {
 	for (int i = 0; i < depth; i++)
-		std::cout << "\t";
+		std::cout << "  ";
 
 	std::cout << "<" << root.value.value << ">" << std::endl;
 	if (root.left != nullptr)
 		print_tree(*root.left, depth + 1);
 	if (root.right != nullptr)
 		print_tree(*root.right, depth + 1);
+}
+
+void print_statement(Statement statement, int depth = 0)
+{
+	for (std::variant<AST, Statement> stmt : statement.lines)
+	{
+		if (stmt.index() == 0)
+		{
+			print_tree(std::get<AST>(stmt), depth);
+		}
+		else
+		{
+			std::cout << "{" << std::endl;
+			print_statement(std::get<Statement>(stmt), depth + 1);
+			std::cout << "}" << std::endl;
+		}
+	}
 }
 
 void compile(std::string source)
@@ -50,25 +67,21 @@ void compile(std::string source)
 // PARSING
 //////////////////////////////////////////////////////////////////////////////////////
 	std::cout << "\nPARSING:" << std::endl;
-	Statement statement = parse_statement(tokens);
+	Statement code_statement = parse_statement(tokens);
 
 	// DEBUG
-	for (std::variant<AST, Statement> stmt : statement.lines)
-		print_tree(std::get<AST>(stmt), 0);
+	print_statement(code_statement);
 	//
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CONVERTING
 //////////////////////////////////////////////////////////////////////////////////////
 	std::cout << "\nCONVERTING:" << std::endl;
-	for (std::variant<AST, Statement> tree : statement.lines)
-	{
-		std::string code = convert(std::get<AST>(tree));
+	std::string code = convert(code_statement);
 
-		// DEBUG
-		std::cout << code;
-		//
-	}
+	// DEBUG
+	std::cout << code;
+	//
 }
 
 std::string usage = R"(rat compiler
