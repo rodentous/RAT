@@ -3,9 +3,8 @@
 
 #include "types.h"
 
-std::string get_var(int num);
-std::string convert(Statement statement);
 
-void convert_tree(AST tree);
+std::vector<Instruction> convert(std::vector<AST> trees);
+
 
 #endif

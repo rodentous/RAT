@@ -1,53 +1,55 @@
+#include "types.h"
 #include "converter.h"
 #include <stdexcept>
 
-std::string code;
+
 int highest = 0;
+std::vector<Instruction> instructions;
 
-std::string get_var(int num)
-{
-	return "r" + std::to_string(num);
-}
-
-std::string convert(Statement statement)
-{
-	for (std::variant<AST, Statement> line : statement.lines)
-	{
-		if (line.index() == 1)
-		    convert(std::get<Statement>(line));
-		else
-			convert_tree(std::get<AST>(line));
-	}
-
-	return code;
-}
 
 void convert_tree(AST tree)
 {
 	switch (tree.value.type)
 	{
 		case Token::CONSTANT:
-			code += get_var(++highest) + " = " + tree.value.value + "\n";
+			instructions.push_back(Instruction(Instruction::MOVE, ++highest, tree.value.value));
 			break;
+
 		case Token::OPERATOR:
-			convert_tree(*tree.left);
-			convert_tree(*tree.right);
-			code += get_var(highest - 1) + " = " + get_var(highest - 1) + " " + tree.value.value + " " + get_var(highest) + "\n";
-			highest--;
+			if (tree.value.value == operators["="])
+			{
+				convert_tree(*tree.left);
+				convert_tree(*tree.right);
+				if (symbol_table.contains(tree.left->value.value))
+					symbol_table[tree.left->value.value] = tree.right->value.value;
+				else
+					throw std::runtime_error("Undefined variable: " + symbol_table_entries[tree.left->value.value]);
+			}
+			instructions.push_back(Instruction(Instruction::ADD, --highest, tree.value.type));
 			break;
+		
 		case Token::KEYWORD:
-			if (tree.value.value == "write")
+			if (tree.value.value == operators["exit"])
 			{
 				convert_tree(*tree.right);
-				code += "write " + get_var(highest--) + "\n";
+				instructions.push_back(Instruction(Instruction::EXIT, highest--, tree.right->value.value));
 			}
-			else if (tree.value.value == "quit")
+			else if (tree.value.value == operators["var"])
 			{
 				convert_tree(*tree.right);
-				code += "quit " + get_var(highest--) + "\n";
+				symbol_table[tree.right->value.value];
 			}
 			break;
+
 		default:
-			throw std::runtime_error("Unexpected token: " + tree.value.value);
+			throw std::runtime_error("Unexpected token: " + '<' + tree.value.type + ' ' + tree.value.value + '>');
 	}
+}
+
+std::vector<Instruction> convert(std::vector<AST> trees)
+{
+	for (AST tree : trees)
+		convert_tree(tree);
+
+	return instructions;
 }

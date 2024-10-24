@@ -1,29 +1,69 @@
 #ifndef TYPES_H
 #define TYPES_H
+#pragma once
 
-#include <cctype>
-#include <cstdint>
-#include <map>
 #include <string>
 #include <vector>
 #include <variant>
+#include <map>
+
+
+std::map<std::string, int> keywords {
+	{"exit" , 0},
+	{"write", 1}
+};
+
+std::map<std::string, int> operators {
+	{"=" , 0},
+	{"==", 1},
+	{">=", 2},
+	{"<=", 3},
+	{"+" , 4},
+	{"-" , 5},
+	{"*" , 6},
+	{"/" , 7},
+};
+
+std::map<int, int> symbol_table;
+
+std::vector<std::string> symbol_table_entries;
 
 struct Token
 {
 	enum Type
 	{
+		KEYWORD,
+		OPERATOR,
 		CONSTANT,
 		VARIABLE,
-		OPERATOR,
-		KEYWORD,
- // ...
+		ENDLINE,
 	};
 	Type type;
-	std::string value;
+	int value;
 	int priority;
 
 	int line; // Line number where the token appears
 	int column; // Column number where the token appears
+};
+
+struct Instruction
+{
+	enum Type
+	{
+		EXIT,
+		MOVE,
+		ADD,
+		SUB,
+		MULT,
+		PUSH,
+		POP,
+	};
+	Type type;
+
+	int argument1;
+	int argument2;
+
+	Instruction (Type t, int a1, int a2) : type(t), argument1(a1), argument2(a2) {}
 };
 
 struct AST
@@ -38,28 +78,5 @@ struct Statement
 	std::vector<std::variant<AST, Statement>> lines;
 };
 
-struct Variable
-{
-	enum Type
-	{
-		NONE,
-		INTEGER,
-		FLOAT,
- // ...
-	} type;
-
-	std::vector<uint8_t> data; // Raw bytes of data
-};
-
-class Symbol_table
-{
-  private:
-	std::map<std::string, Variable> variables;
-
-  public:
-	void add_variable(std::string &name, Variable &var);
-	Variable get_variable(std::string &name);
-	bool contains(std::string &name);
-};
 
 #endif

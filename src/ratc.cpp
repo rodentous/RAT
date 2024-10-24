@@ -1,11 +1,12 @@
 #include "ratc.h"
 
-#include "converter.h"
-#include "parser.h"
+#include "types.h"
 #include "preprocessor.h"
 #include "tokeniser.h"
-#include "types.h"
+#include "parser.h"
+#include "converter.h"
 #include <iostream>
+#include <map>
 
 void print_tree(AST root, int depth = 0)
 {
@@ -19,72 +20,58 @@ void print_tree(AST root, int depth = 0)
 		print_tree(*root.right, depth + 1);
 }
 
-void print_statement(Statement statement, int depth = 0)
+void print_instruction(Instruction instruction)
 {
-	for (std::variant<AST, Statement> stmt : statement.lines)
-	{
-		if (stmt.index() == 0)
-		{
-			print_tree(std::get<AST>(stmt), depth);
-		}
-		else
-		{
-			std::cout << "{" << std::endl;
-			print_statement(std::get<Statement>(stmt), depth + 1);
-			std::cout << "}" << std::endl;
-		}
-	}
+	std::cout << instruction.type << " " << instruction.argument1 << " " << instruction.argument2 << std::endl;
 }
 
 void compile(std::string source)
 {
 	std::cout << source << std::endl;
-	Symbol_table symbol_table;
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 /// PREPROCESSING
 //////////////////////////////////////////////////////////////////////////////////////
-	std::cout << "\nPREPROCESSING:" << std::endl;
 	preprocess(&source);
 
 	// DEBUG
 	std::cout << source << std::endl;
-	//
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // TOKENISING
 //////////////////////////////////////////////////////////////////////////////////////
-	std::cout << "\nTOKENISING:" << std::endl;
-
 	std::vector<Token> tokens = get_tokens(source);
+
 	// DEBUG
 	for (Token token : tokens)
 		std::cout << "<" << token.type << ", " << token.value << ">";
 	std::cout << std::endl;
-	//
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // PARSING
 //////////////////////////////////////////////////////////////////////////////////////
-	std::cout << "\nPARSING:" << std::endl;
-	Statement code_statement = parse_statement(tokens);
+	std::vector<AST> trees = parse(tokens);
 
 	// DEBUG
-	print_statement(code_statement);
-	//
+	for (AST tree : trees)
+		print_tree(tree);
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // CONVERTING
 //////////////////////////////////////////////////////////////////////////////////////
-	std::cout << "\nCONVERTING:" << std::endl;
-	std::string code = convert(code_statement);
+	std::vector<Instruction> instructions = convert(trees);
 
 	// DEBUG
-	std::cout << code;
-	//
+	for (Instruction instruction : instructions)
+		print_instruction(instruction);
 }
 
-std::string usage = R"(rat compiler
+std::string help = R"(RAT compiler
+
 Usage:
     ratc <input> [-o] <output>
     ratc [options] <arguments>
@@ -98,14 +85,9 @@ int main(int argc, char *argv[])
 {
 	for (int i = 1; i < argc; i++)
 	{
-		if (argv[i] == nullptr)
+		if (std::string(argv[i]) == "-h" || std::string(argv[i]) == "--help")
 		{
-			std::cout << usage << std::endl;
-			return 0;
-		}
-		else if (std::string(argv[i]) == "-h" || std::string(argv[i]) == "--help")
-		{
-			std::cout << usage << std::endl;
+			std::cout << help << std::endl;
 			return 0;
 		}
 		else if (std::string(argv[i]) == "-r" || std::string(argv[i]) == "--run")
@@ -117,8 +99,10 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			std::cout << "Unknown option: " << argv[i] << usage << std::endl;
+			std::cout << "Unknown option: " << argv[i] << help << std::endl;
 			return 1;
 		}
 	}
+	std::cout << help << std::endl;
+	return 0;			
 }
