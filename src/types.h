@@ -1,6 +1,5 @@
 #ifndef TYPES_H
 #define TYPES_H
-#pragma once
 
 #include <string>
 #include <vector>
@@ -24,10 +23,6 @@ std::map<std::string, int> operators {
 	{"/" , 7},
 };
 
-std::map<int, int> symbol_table;
-
-std::vector<std::string> symbol_table_entries;
-
 struct Token
 {
 	enum Type
@@ -42,11 +37,12 @@ struct Token
 	int value;
 	int priority;
 
-	int line; // Line number where the token appears
-	int column; // Column number where the token appears
+	// where token appears
+	int line;
+	int column;
 };
 
-struct Instruction
+struct Instruction // assembly instruction
 {
 	enum Type
 	{
@@ -63,17 +59,18 @@ struct Instruction
 	int argument1;
 	int argument2;
 
+	// constructor
 	Instruction (Type t, int a1, int a2) : type(t), argument1(a1), argument2(a2) {}
 };
 
-struct AST
+struct AST // Abstract Syntax Tree
 {
 	Token value;
 	AST *left;
 	AST *right;
 };
 
-struct Statement
+struct Statement // block of syntax trees
 {
 	std::vector<std::variant<AST, Statement>> lines;
 };

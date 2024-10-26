@@ -2,22 +2,45 @@
 
 #include "types.h"
 #include <map>
-#include <algorithm>
 
+
+std::map<std::string, int> symbol_table;
+int symbol_table_index = 0;
 
 int get_number(std::string text)
 {
+	return std::stoi(text);
+}
+
+bool is_number(std::string text)
+{
 	for (char character : text)
 	{
-		character++;
+		if (!std::isdigit(character) && !std::isalnum(character) && character != '.' && character != '_')
+			return false;
 	}
-	return 0;
+	return std::isdigit(text.at(0));
+}
+
+bool is_word(std::string text)
+{
+	for (char character : text)
+	{
+		if (!std::isalnum(character) && character != '_')
+			return false;
+	}
+	return std::isalpha(text.at(0));
+}
+
+bool is_operator(std::string text)
+{
+	return operators.contains(text);
 }
 
 Token add_token(std::string text)
 {
 	Token token;
-	if (std::isalpha(text.at(0)) || text.at(0) == '_')
+	if (is_word(text))
 	{
 		// Keyword
 		if (keywords.contains(text))
@@ -30,28 +53,22 @@ Token add_token(std::string text)
 		else
 		{
 			token.type = Token::VARIABLE;
-			
-			std::vector<std::string>::iterator iterator = std::find(symbol_table_entries.begin(), symbol_table_entries.end(), text);
-			size_t index = std::distance(symbol_table_entries.begin(), iterator);
-			if (index != symbol_table_entries.size())
-				token.value = index;
+			if (symbol_table.contains(text))
+				token.value = symbol_table[text] = symbol_table_index++;
 			else
-			{
-				symbol_table_entries.push_back(text);
-				token.value = index;
-			}
+				token.value = symbol_table[text];
 			token.priority = 0;
 		}
 	}
-	// Constant
-	else if (std::isdigit(text.at(0)))
+	// Number
+	else if (is_number(text))
 	{
 		token.type = Token::CONSTANT;
 		token.value = get_number(text);
 		token.priority = 0;
 	}
 	// Operator
-	else if (operators.contains(text))
+	else if (is_operator(text))
 	{
 		token.type = Token::OPERATOR;
 		token.value = operators[text];
@@ -73,13 +90,13 @@ std::vector<Token> get_tokens(std::string text)
 				buffer.push_back(character);
 		}
 
-		else if (std::isalpha(buffer.at(0)) && std::isalnum(character))
+		else if (is_word(buffer + character))
 			buffer.push_back(character);
 
-		else if (std::isdigit(buffer.at(0)) && std::isalnum(character))
+		else if (is_number(buffer + character))
 			buffer.push_back(character);
 
-		else if (std::ispunct(buffer.at(0)) && std::ispunct(character))
+		else if (is_operator(buffer + character))
 			buffer.push_back(character);
 
 		else

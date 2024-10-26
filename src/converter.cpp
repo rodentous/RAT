@@ -5,6 +5,7 @@
 
 int highest = 0;
 std::vector<Instruction> instructions;
+std::map<int, int> symbol_table;
 
 
 void convert_tree(AST tree)
@@ -23,7 +24,7 @@ void convert_tree(AST tree)
 				if (symbol_table.contains(tree.left->value.value))
 					symbol_table[tree.left->value.value] = tree.right->value.value;
 				else
-					throw std::runtime_error("Undefined variable: " + symbol_table_entries[tree.left->value.value]);
+					throw std::runtime_error("Undefined variable: "); // + symbol_table_entries[tree.left->value.value]);
 			}
 			instructions.push_back(Instruction(Instruction::ADD, --highest, tree.value.type));
 			break;
