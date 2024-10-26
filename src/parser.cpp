@@ -37,7 +37,7 @@ std::vector<AST> parse(std::vector<Token> tokens)
 	std::vector<Token> buffer;
 	for (Token token : tokens)
 	{
-		if (token.type != Token::ENDLINE)
+		if (token.value != ";")
 			buffer.push_back(token);
 		else
 		{

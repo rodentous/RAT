@@ -4,13 +4,23 @@
 #include <map>
 
 
-std::map<std::string, int> symbol_table;
-int symbol_table_index = 0;
+std::map<std::string, int> keywords {
+	{"exit" , 10},
+	{"write", 10},
+	{"var"  , 1},
+};
 
-int get_number(std::string text)
-{
-	return std::stoi(text);
-}
+std::map<std::string, int> operators {
+	{"=" , 5},
+	{"==", 4},
+	{">=", 4},
+	{"<=", 4},
+	{"+" , 3},
+	{"-" , 3},
+	{"*" , 2},
+	{"/" , 2},
+	{";" , -1},
+};
 
 bool is_number(std::string text)
 {
@@ -37,26 +47,25 @@ bool is_operator(std::string text)
 	return operators.contains(text);
 }
 
-Token add_token(std::string text)
+Token add_token(std::string text, int line, int column)
 {
 	Token token;
+	token.line = line;
+	token.column = column;
 	if (is_word(text))
 	{
 		// Keyword
 		if (keywords.contains(text))
 		{
 			token.type = Token::KEYWORD;
-			token.value = keywords[text];
+			token.value = text;
 			token.priority = keywords[text];
 		}
 		// Variable
 		else
 		{
 			token.type = Token::VARIABLE;
-			if (symbol_table.contains(text))
-				token.value = symbol_table[text] = symbol_table_index++;
-			else
-				token.value = symbol_table[text];
+			token.value = text;
 			token.priority = 0;
 		}
 	}
@@ -64,14 +73,14 @@ Token add_token(std::string text)
 	else if (is_number(text))
 	{
 		token.type = Token::CONSTANT;
-		token.value = get_number(text);
+		token.value = text;
 		token.priority = 0;
 	}
 	// Operator
 	else if (is_operator(text))
 	{
 		token.type = Token::OPERATOR;
-		token.value = operators[text];
+		token.value = text;
 		token.priority = operators[text];
 	}
 	return token;
@@ -82,8 +91,20 @@ std::vector<Token> get_tokens(std::string text)
 	std::vector<Token> tokens;
 	std::string buffer;
 
+	int line = 0;
+	int column = 0;
+
 	for (char character : text)
 	{
+		if (character == '\n')
+		{
+			line++;
+			column = 0;	
+		}
+		else
+			column++;
+
+		
 		if (buffer.empty())
 		{
 			if (!std::isspace(character))
@@ -101,7 +122,7 @@ std::vector<Token> get_tokens(std::string text)
 
 		else
 		{
-			tokens.push_back(add_token(buffer));
+			tokens.push_back(add_token(buffer, line, column - buffer.size()));
 			buffer.clear();
 
 			if (!std::isspace(character))
@@ -109,7 +130,7 @@ std::vector<Token> get_tokens(std::string text)
 		}
 	}
 	if (!buffer.empty())
-		tokens.push_back(add_token(buffer));
+		tokens.push_back(add_token(buffer, line, column - buffer.size()));
 
 	return tokens;
 }

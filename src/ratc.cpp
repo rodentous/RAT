@@ -13,7 +13,7 @@ void print_tree(AST root, int depth = 0)
 	for (int i = 0; i < depth; i++)
 		std::cout << "  ";
 
-	std::cout << "<" << root.value.value << ">" << std::endl;
+	std::cout << token_to_string(root.value) << " priority: " << root.value.priority << std::endl;
 	if (root.left != nullptr)
 		print_tree(*root.left, depth + 1);
 	if (root.right != nullptr)
@@ -27,16 +27,13 @@ void print_instruction(Instruction instruction)
 
 void compile(std::string source)
 {
-	std::cout << source << std::endl;
-
-
 //////////////////////////////////////////////////////////////////////////////////////
 /// PREPROCESSING
 //////////////////////////////////////////////////////////////////////////////////////
 	preprocess(&source);
 
 	// DEBUG
-	std::cout << source << std::endl;
+	std::cout << source << std::endl << std::endl;
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -46,8 +43,8 @@ void compile(std::string source)
 
 	// DEBUG
 	for (Token token : tokens)
-		std::cout << "<" << token.type << ", " << token.value << ">";
-	std::cout << std::endl;
+		std::cout << token_to_string(token);
+	std::cout << std::endl << std::endl;
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +55,7 @@ void compile(std::string source)
 	// DEBUG
 	for (AST tree : trees)
 		print_tree(tree);
+	std::cout << std::endl;
 
 
 //////////////////////////////////////////////////////////////////////////////////////

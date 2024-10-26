@@ -1,27 +1,11 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <string>
+#include <iostream>
 #include <vector>
 #include <variant>
 #include <map>
 
-
-std::map<std::string, int> keywords {
-	{"exit" , 0},
-	{"write", 1}
-};
-
-std::map<std::string, int> operators {
-	{"=" , 0},
-	{"==", 1},
-	{">=", 2},
-	{"<=", 3},
-	{"+" , 4},
-	{"-" , 5},
-	{"*" , 6},
-	{"/" , 7},
-};
 
 struct Token
 {
@@ -31,15 +15,14 @@ struct Token
 		OPERATOR,
 		CONSTANT,
 		VARIABLE,
-		ENDLINE,
 	};
 	Type type;
-	int value;
+	std::string value;
 	int priority;
 
 	// where token appears
-	int line;
-	int column;
+	int line = 0;
+	int column = 0;
 };
 
 struct Instruction // assembly instruction
@@ -56,11 +39,11 @@ struct Instruction // assembly instruction
 	};
 	Type type;
 
-	int argument1;
-	int argument2;
+	std::string argument1;
+	std::string argument2;
 
 	// constructor
-	Instruction (Type t, int a1, int a2) : type(t), argument1(a1), argument2(a2) {}
+	Instruction (Type t, std::string a1, std::string a2) : type(t), argument1(a1), argument2(a2) {}
 };
 
 struct AST // Abstract Syntax Tree
@@ -74,6 +57,12 @@ struct Statement // block of syntax trees
 {
 	std::vector<std::variant<AST, Statement>> lines;
 };
+
+void error(Token token, std::string error, std::string message);
+
+std::string type_to_string(Token::Type type);
+
+std::string token_to_string(Token token);
 
 
 #endif
