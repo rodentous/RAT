@@ -4,7 +4,7 @@
 #include <string>
 
 
-void compile(std::string source);
+std::string compile(std::string source);
 
 
 #endif

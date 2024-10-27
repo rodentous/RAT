@@ -7,9 +7,10 @@
 #include "converter.h"
 
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 
-void compile(std::string source)
+std::string compile(std::string source)
 {
 //////////////////////////////////////////////////////////////////////////////////////
 /// PREPROCESSING
@@ -50,6 +51,16 @@ void compile(std::string source)
 	// DEBUG
 	for (Instruction instruction : instructions)
 		std::cout << instruction_to_string(instruction);
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// OUTPUT
+//////////////////////////////////////////////////////////////////////////////////////
+	std::string output;
+	for (Instruction instruction : instructions)
+		output += instruction_to_string(instruction);
+
+	return output;
 }
 
 std::string usage = R"(RAT compiler
@@ -65,6 +76,9 @@ Options:
 
 int main(int argc, char *argv[])
 {
+	std::ifstream input;
+	std::ofstream output;
+	
 	for (int i = 1; i < argc; i++)
 	{
 		if (std::string(argv[i]) == "-h" || std::string(argv[i]) == "--help")
@@ -74,7 +88,7 @@ int main(int argc, char *argv[])
 		}
 		else if (std::string(argv[i]) == "-r" || std::string(argv[i]) == "--run")
 		{
-			if (!argv[i + 1])
+			if (i >= argc - 1)
 			{
 				std::cout << "Nothing to compile" << std::endl;
 				return 1;
@@ -84,16 +98,63 @@ int main(int argc, char *argv[])
 			
 			return 0;
 		}
-		else if (std::filesystem::exists(argv[i]))
+		else if (std::string(argv[i]) == "-o" || std::string(argv[i]) == "--out")
 		{
-
+			if (i == argc - 1 || argv[i + 1][0] == '-')
+			{
+				std::cout << "No output file" << std::endl;
+				return 1;
+			}
+			
+			output.open(argv[i + 1]);
+			
+			if (!output.is_open())
+			{
+				std::cout << "Wrong output file path" << std::endl;
+				return 1;		
+			}
 		}
-		else
+		else if (argv[i][0] == '-')
 		{
 			std::cout << "Unknown option: " << argv[i] << usage << std::endl;
 			return 1;
 		}
+		else
+		{
+			input.open(argv[i]);
+
+			if (!input.is_open())
+			{
+				std::cout << "Wrong input file path" << std::endl;
+				return 1;
+			}
+		}
 	}
-	std::cout << usage << std::endl;
+
+	if (!input.is_open())
+	{
+		std::cout << "No input file" << std::endl;
+		std::cout << usage << std::endl;
+		return 1;
+	}
+
+	if (!output.is_open())
+	{
+		std::cout << "Creating default output file" << std::endl;		
+		output.clear();
+        output.open("output.out", std::ios::out); // create file
+        output.close();
+        output.open("output.out");
+	}
+
+	std::string line;
+	std::string source;
+	while (std::getline(input, line))
+		source += line;
+	input.close();
+	
+	output << compile(source);
+	output.close();
+	
 	return 0;
 }

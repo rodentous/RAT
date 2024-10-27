@@ -77,6 +77,8 @@ std::string convert_tree(AST tree)
 		error(tree.value, "Unexpected token: ", token_to_string(tree.value));
 		return "";
 	}
+	
+	return "";
 }
 
 std::vector<Instruction> convert(std::vector<AST> trees)
