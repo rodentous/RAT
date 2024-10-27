@@ -1,24 +1,23 @@
 #include "tokeniser.h"
 
-#include "types.h"
 #include <map>
 
 
-std::map<std::string, int> keywords {
+const std::map<std::string, int> keywords {
 	{"exit" , 10},
-	{"write", 10},
-	{"var"  , 1},
+	{"var"  , 2},
 };
 
-std::map<std::string, int> operators {
-	{"=" , 5},
-	{"==", 4},
-	{">=", 4},
-	{"<=", 4},
-	{"+" , 3},
-	{"-" , 3},
-	{"*" , 2},
-	{"/" , 2},
+const std::map<std::string, int> operators {
+	{"=" , 6},
+	{"==", 5},
+	{">=", 5},
+	{"<=", 5},
+	{"+" , 4},
+	{"-" , 4},
+	{"*" , 3},
+	{"/" , 3},
+	{":" , 1},
 	{";" , -1},
 };
 
@@ -59,7 +58,7 @@ Token add_token(std::string text, int line, int column)
 		{
 			token.type = Token::KEYWORD;
 			token.value = text;
-			token.priority = keywords[text];
+			token.priority = keywords.at(text);
 		}
 		// Variable
 		else
@@ -81,7 +80,7 @@ Token add_token(std::string text, int line, int column)
 	{
 		token.type = Token::OPERATOR;
 		token.value = text;
-		token.priority = operators[text];
+		token.priority = operators.at(text);
 	}
 	return token;
 }

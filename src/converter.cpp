@@ -7,19 +7,24 @@ int highest = 0;
 std::vector<Instruction> instructions;
 std::map<std::string, int> symbol_table;
 
-void convert_tree(AST tree)
+std::string convert_tree(AST tree)
 {
+	// std::string	tmp;
+ 
 	switch (tree.value.type)
 	{
 	case Token::CONSTANT:
-		instructions.push_back(Instruction(Instruction::MOVE, "t-" + std::to_string(++highest), tree.value.value));
-		break;
+		// tmp = "t-" + std::to_string(++highest);
+		// instructions.push_back(Instruction(Instruction::MOVE, tmp, tree.value.value));
+		return tree.value.value;
 
 	case Token::VARIABLE:
 		if (!symbol_table.contains(tree.value.value))
 			error(tree.value, "Undefined variable: ", token_to_string(tree.value));
 
-		instructions.push_back(Instruction(Instruction::MOVE, "t-" + std::to_string(++highest), "v-" + tree.value.value));
+		// tmp = "t-" + std::to_string(++highest);
+		// instructions.push_back(Instruction(Instruction::MOVE, tmp, "v-" + tree.value.value));
+		return "v-" + tree.value.value;
 	
 	case Token::OPERATOR:
 		if (tree.value.value == "+")
@@ -27,20 +32,10 @@ void convert_tree(AST tree)
 			if (tree.left == nullptr || tree.right == nullptr)
 				error(tree.value, "Invalid expression: ", token_to_string(tree.value));
 
-			convert_tree(*tree.left);
-			convert_tree(*tree.right);
+			std::string left = convert_tree(*tree.left);
+			std::string right = convert_tree(*tree.right);
 				
 			instructions.push_back(Instruction(Instruction::ADD, "t-" + std::to_string(--highest), "t-" + std::to_string(highest)));
-		}
-		else if (tree.value.value == "*")
-		{
-			if (tree.left == nullptr || tree.right == nullptr)
-				error(tree.value, "Invalid expression: ", token_to_string(tree.value));
-
-			convert_tree(*tree.left);
-			convert_tree(*tree.right);
-				
-			instructions.push_back(Instruction(Instruction::MULT, "t-" + std::to_string(--highest), "t-" + std::to_string(highest)));
 		}
 		else if (tree.value.value == "=")
 		{
@@ -80,6 +75,7 @@ void convert_tree(AST tree)
 
 	default:
 		error(tree.value, "Unexpected token: ", token_to_string(tree.value));
+		return "";
 	}
 }
 

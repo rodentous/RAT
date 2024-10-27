@@ -1,10 +1,10 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <iostream>
 #include <vector>
-#include <variant>
+#include <string>
 #include <map>
+#include <variant>
 
 
 struct Token
@@ -35,7 +35,6 @@ struct Instruction // assembly instruction
 		SUB,
 		MULT,
 		PUSH,
-		POP,
 	};
 	Type type;
 
@@ -53,16 +52,25 @@ struct AST // Abstract Syntax Tree
 	AST *right;
 };
 
-struct Statement // block of syntax trees
+struct Statement // block of code
 {
 	std::vector<std::variant<AST, Statement>> lines;
 };
 
-void error(Token token, std::string error, std::string message);
 
-std::string type_to_string(Token::Type type);
+// debug
+std::string token_type_to_string(Token::Type type);
+
+std::string instruction_type_to_string(Instruction::Type type);
 
 std::string token_to_string(Token token);
+
+std::string ast_to_string(AST tree, int depth = 0);
+
+std::string instruction_to_string(Instruction instruction);
+
+
+void error(Token token, std::string error, std::string message = "");
 
 
 #endif
