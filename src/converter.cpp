@@ -9,8 +9,6 @@ std::map<std::string, int> symbol_table;
 
 std::string convert_tree(AST tree)
 {
-	// std::string	tmp;
- 
 	switch (tree.value.type)
 	{
 	case Token::CONSTANT:
@@ -34,21 +32,23 @@ std::string convert_tree(AST tree)
 
 			std::string left = convert_tree(*tree.left);
 			std::string right = convert_tree(*tree.right);
-				
-			instructions.push_back(Instruction(Instruction::ADD, "t-" + std::to_string(--highest), "t-" + std::to_string(highest)));
+
+			instructions.push_back(Instruction(Instruction::MOVE, "t-" + std::to_string(++highest), left));
+			instructions.push_back(Instruction(Instruction::MOVE, "t-" + std::to_string(++highest), right));
+
+			instructions.push_back(Instruction(Instruction::ADD, "t-" + std::to_string(highest), "t-" + std::to_string(highest--)));
+
+			return "t-" + std::to_string(highest);			
 		}
 		else if (tree.value.value == "=")
 		{
 			if (tree.left == nullptr || tree.right == nullptr)
 				error(tree.value, "Invalid expression: ", token_to_string(tree.value));
 
-			convert_tree(*tree.left);
-			convert_tree(*tree.right);
-			
-			if (tree.left->value.type != Token::VARIABLE)
-				error(tree.value, "Undefined variable: ", token_to_string(tree.value));
+			std::string left = convert_tree(*tree.left);
+			std::string right = convert_tree(*tree.right);
 
-			instructions.push_back(Instruction(Instruction::MOVE, "v-" + tree.left->value.value, "t-" + std::to_string(highest--)));
+			instructions.push_back(Instruction(Instruction::MOVE, "v-" + left, "t-" + std::to_string(highest--)));
 		}
 		break;
 	
@@ -63,6 +63,7 @@ std::string convert_tree(AST tree)
 		}
 		else if (tree.value.value == "var")
 		{
+
 			if (tree.right == nullptr || tree.right->value.type != Token::VARIABLE)
 				error(tree.value, "Invalid variable declaration", token_to_string(tree.right->value));
 			else if (symbol_table.contains(tree.right->value.value))
@@ -70,6 +71,7 @@ std::string convert_tree(AST tree)
 
 			symbol_table[tree.right->value.value];
 			convert_tree(*tree.right);
+			return tree.right->value.value;
 		}
 		break;
 

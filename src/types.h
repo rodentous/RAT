@@ -17,6 +17,7 @@ struct Token
 		VARIABLE,
 	};
 	Type type;
+
 	std::string value;
 	int priority;
 

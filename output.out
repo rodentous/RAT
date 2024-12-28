@@ -1,0 +1,9 @@
+MOVE t-1 2
+MOVE t-2 9
+ADD t-1 t-2
+MOVE t-3 1
+MOVE t-4 t-1
+ADD t-3 t-4
+MOVE t-5 0
+MOVE t-6 t-3
+ADD t-5 t-6

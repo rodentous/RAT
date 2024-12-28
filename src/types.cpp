@@ -75,7 +75,7 @@ std::string ast_to_string(AST tree, int depth)
 
 std::string instruction_to_string(Instruction instruction)
 {
-	return instruction.type + " " + instruction.argument1 + " " + instruction.argument2 + "\n";
+	return instruction_type_to_string(instruction.type) + " " + instruction.argument1 + " " + instruction.argument2 + "\n";
 }
 
 

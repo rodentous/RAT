@@ -25,7 +25,10 @@ bool is_number(std::string text)
 {
 	for (char character : text)
 	{
-		if (!std::isdigit(character) && !std::isalnum(character) && character != '.' && character != '_')
+		if (std::isdigit(character))
+			continue;
+
+		if (!std::isalnum(character) || character != '.' || character != '_')
 			return false;
 	}
 	return std::isdigit(text.at(0));
@@ -51,6 +54,7 @@ Token add_token(std::string text, int line, int column)
 	Token token;
 	token.line = line;
 	token.column = column;
+
 	if (is_word(text))
 	{
 		// Keyword
@@ -103,13 +107,14 @@ std::vector<Token> get_tokens(std::string text)
 		else
 			column++;
 
-		
+		// if empty always add character to buffer
 		if (buffer.empty())
 		{
 			if (!std::isspace(character))
 				buffer.push_back(character);
 		}
 
+		// if part of token
 		else if (is_word(buffer + character))
 			buffer.push_back(character);
 
@@ -119,6 +124,7 @@ std::vector<Token> get_tokens(std::string text)
 		else if (is_operator(buffer + character))
 			buffer.push_back(character);
 
+		// end of current token and start of new one
 		else
 		{
 			tokens.push_back(add_token(buffer, line, column - buffer.size()));
@@ -128,6 +134,7 @@ std::vector<Token> get_tokens(std::string text)
 				buffer.push_back(character);
 		}
 	}
+	// apppend last token
 	if (!buffer.empty())
 		tokens.push_back(add_token(buffer, line, column - buffer.size()));
 
