@@ -20,7 +20,7 @@ void preprocess(std::string *input)
 
 		if (i != input->size() && character == '/' && input->at(i + 1) == '/')
 			comment = true;
-		
+
 		result += character;
 	}
 	*input = result;

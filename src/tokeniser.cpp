@@ -102,7 +102,7 @@ std::vector<Token> get_tokens(std::string text)
 		if (character == '\n')
 		{
 			line++;
-			column = 0;	
+			column = 0;
 		}
 		else
 			column++;

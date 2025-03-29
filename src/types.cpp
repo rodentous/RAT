@@ -9,13 +9,13 @@ std::string token_type_to_string(Token::Type type)
 	{
 	case Token::VARIABLE:
 		return "VARIABLE";
-	
+
 	case Token::KEYWORD:
 		return "KEYWORD";
-	
+
 	case Token::OPERATOR:
 		return "OPERATOR";
-		
+
 	case Token::CONSTANT:
 		return "CONSTANT";
 
@@ -30,22 +30,22 @@ std::string instruction_type_to_string(Instruction::Type type)
 	{
 	case Instruction::EXIT:
 		return "EXIT";
-		
+
 	case Instruction::MOVE:
 		return "MOVE";
-		
+
 	case Instruction::ADD:
 		return "ADD";
-		
+
 	case Instruction::SUB:
 		return "SUB";
 
 	case Instruction::MULT:
 		return "MULT";
-			
+
 	case Instruction::PUSH:
 		return "PUSH";
-	
+
 	default:
 		return "WRONG-TYPE";
 	}

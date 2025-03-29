@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 {
 	std::ifstream input;
 	std::ofstream output;
-	
+
 	for (int i = 1; i < argc; i++)
 	{
 		if (std::string(argv[i]) == "-h" || std::string(argv[i]) == "--help")
@@ -93,9 +93,9 @@ int main(int argc, char *argv[])
 				std::cout << "Nothing to compile" << std::endl;
 				return 1;
 			}
-			
+
 			compile(argv[i + 1]);
-			
+
 			return 0;
 		}
 		else if (std::string(argv[i]) == "-o" || std::string(argv[i]) == "--out")
@@ -105,9 +105,9 @@ int main(int argc, char *argv[])
 				std::cout << "No output file" << std::endl;
 				return 1;
 			}
-			
+
 			output.open(argv[i + 1]);
-			
+
 			if (!output.is_open())
 			{
 				std::cout << "Wrong output file path" << std::endl;
@@ -152,9 +152,9 @@ int main(int argc, char *argv[])
 	while (std::getline(input, line))
 		source += line;
 	input.close();
-	
+
 	output << compile(source);
 	output.close();
-	
+
 	return 0;
 }

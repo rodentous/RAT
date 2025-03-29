@@ -23,7 +23,7 @@ std::string convert_tree(AST tree)
 		// tmp = "t-" + std::to_string(++highest);
 		// instructions.push_back(Instruction(Instruction::MOVE, tmp, "v-" + tree.value.value));
 		return "v-" + tree.value.value;
-	
+
 	case Token::OPERATOR:
 		if (tree.value.value == "+")
 		{
@@ -38,7 +38,7 @@ std::string convert_tree(AST tree)
 
 			instructions.push_back(Instruction(Instruction::ADD, "t-" + std::to_string(highest), "t-" + std::to_string(highest--)));
 
-			return "t-" + std::to_string(highest);			
+			return "t-" + std::to_string(highest);
 		}
 		else if (tree.value.value == "=")
 		{
@@ -51,13 +51,13 @@ std::string convert_tree(AST tree)
 			instructions.push_back(Instruction(Instruction::MOVE, "v-" + left, "t-" + std::to_string(highest--)));
 		}
 		break;
-	
+
 	case Token::KEYWORD:
 		if (tree.value.value == "exit")
 		{
 			if (tree.right == nullptr)
 				error(tree.value, "No exit code provided: ", token_to_string(tree.value));
-			
+
 			convert_tree(*tree.right);
 			instructions.push_back(Instruction(Instruction::EXIT, "t-" + std::to_string(highest--), ""));
 		}
@@ -79,7 +79,7 @@ std::string convert_tree(AST tree)
 		error(tree.value, "Unexpected token: ", token_to_string(tree.value));
 		return "";
 	}
-	
+
 	return "";
 }
 
